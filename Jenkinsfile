@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
     
@@ -10,20 +9,20 @@ pipeline {
         stage('Clean and Clone Repository') {
             steps {
                 cleanWs()
-                bat 'git clone https://github.com/khushiZalmi/BuildingViaJenkins.git'
+                bat 'git clone https://github.com/khushiZalmi/2346_ISA2.git'
             }
         }
         stage('List Files') {
             steps {
                 // List files to verify Dockerfile location
-                dir('BuildingViaJenkins') {
+                dir('2346_ISA2') {
                     bat 'dir'
                 }
             }
         }
         stage('Build') {
             steps {
-                dir('BuildingViaJenkins') {
+                dir('2346_ISA2') {
                     bat 'docker build -t khushizalmi2346/khushi -f Dockerfile .'
                 }
             }
