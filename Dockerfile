@@ -1,14 +1,10 @@
-# Use Ubuntu as the base image
-FROM ubuntu:latest
+FROM ubuntu
 
-# Install Python3, pip, and Flask
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip && \
-    pip3 install flask
+RUN apt-get update 
+RUN apt-get install -y python3
+RUN apt-get install -y python3-pip
+RUN apt-get install -y python3-flask
 
-# Copy application.py to /opt/app
-COPY application.py /opt/app/application.py
+COPY . /opt/source-code
 
-# Set environment variable and command to run the Flask app
-ENV FLASK_APP=/opt/app/application.py
-CMD ["flask", "run", "--host=0.0.0.0"]
+ENTRYPOINT FLASK_APP=/opt/source-code/app.py flask run
