@@ -1,37 +1,48 @@
 
 pipeline {
     agent any
-
+    
+    environment {
+        PATH = "C:\\Program Files\\Docker\\Docker\\resources\\bin;${env.PATH}" // Adjust this path if Docker is installed elsewhere
+    }
+    
     stages {
-        stage('Clone Repository') {
+        stage('Clean and Clone Repository') {
             steps {
-                git 'https://github.com/khushiZalmi/2346_ISA2.git'
+                cleanWs()
+                bat 'git clone https://github.com/khushiZalmi/BuildingViaJenkins.git'
             }
         }
-
-        stage('Build Docker Image') {
+        stage('List Files') {
             steps {
-                script {
-                    docker.build("2346_image")
+                // List files to verify Dockerfile location
+                dir('BuildingViaJenkins') {
+                    bat 'dir'
                 }
             }
         }
-
-        stage('Delete Existing Container') {
+        stage('Build') {
             steps {
-                script {
-                    def containerName = "2346_container"
-                    sh "docker rm -f ${containerName} || true"
+                dir('BuildingViaJenkins') {
+                    bat 'docker build -t khushizalmi2346/khushi -f Dockerfile .'
                 }
             }
         }
-
-        stage('Run New Container') {
+        stage('Login') {
             steps {
-                script {
-                    def containerName = "2346_container"
-                    docker.image("2346_image").run("-d --name ${containerName} -p 5000:5000")
-                }
+                bat 'docker login -u "khushizalmi2346" -p "0920khushi" docker.io'
+            }
+        }
+        stage('Push') {
+            steps {
+                bat 'docker push khushizalmi2346/khushi'
+            }
+        }
+        stage('Run in Daemon Mode') {
+            steps {
+                bat 'docker rm -f my_container'
+                // Running the Docker container in daemon mode
+                bat 'docker run -d --name my_container khushizalmi2346/khushi'
             }
         }
     }
